@@ -13,7 +13,7 @@ This plugin integrates [PhraseApp](https://phraseapp.com/) into Xcode. Currently
 
 3. Restart Xcode
 
-The plugin was successfully tested on OS X 10.9 with Xcode 6.1. and Xcode 6.2 but might work with other versions of Xcode and Mac OS, too.
+The plugin was successfully tested on OS X 10.9/10.10 with Xcode 6.1, 6.2, 6.3 and 6.4 but might work with other versions of Xcode and Mac OS, too.
 
 ## Setup
 
