@@ -2,18 +2,16 @@
 
 This plugin integrates [PhraseApp](https://phraseapp.com/) into Xcode. Currently it supports uploading and downloading of localization files for [Localizable Strings](http://docs.phraseapp.com/guides/formats/ios-localizable-strings/) and [Xliff](http://docs.phraseapp.com/guides/formats/xliff/).
 
-*Current version: 0.2.3.beta1*
-
 ## Installation
 
 1. Download the latest release from the [Releases](https://github.com/phrase/PhraseAppXcode/releases) tab
 2. Make sure you have a plugin folder for your Xcode project, if not:
 
-		mkdir -p ~/Library/Application Support/Developer/Shared/Xcode/Plug-ins/
+		mkdir -p ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins/
 
 3. Unzip the archive into the Xcode plugin folder:
 
-        ~/Library/Application Support/Developer/Shared/Xcode/Plug-ins/
+        ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins/
 
 4. Restart Xcode
 
@@ -27,7 +25,7 @@ To use the plugin from within Xcode go to
 
 and configure your project settings:
 
-* Access token managed from your [settings](https://phraseapp.com/settings/oauth_access_tokens)
+* Access token managed from your [account settings](https://phraseapp.com/settings/oauth_access_tokens)
 * ProjectID from your [projects overview](https://phraseapp.com/projects)
 * Localization file format, e.g. `Strings` or `Xliff`
 * Application path that must point to your localization files
