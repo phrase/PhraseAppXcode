@@ -27,8 +27,8 @@ To use the plugin from within Xcode go to
 
 and configure your project settings:
 
-* [Access token](https://phraseapp.com/settings/oauth_access_tokens)
-* ProjectID from your [Projects overview](https://phraseapp.com/projects)
+* Access token managed from your [settings](https://phraseapp.com/settings/oauth_access_tokens)
+* ProjectID from your [projects overview](https://phraseapp.com/projects)
 * Localization file format, e.g. `Strings` or `Xliff`
 * Application path that must point to your localization files
 
