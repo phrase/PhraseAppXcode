@@ -5,18 +5,19 @@ This plugin integrates [PhraseApp](https://www.phraseapp.com/) into Xcode.
 
 ## Installation
 
+Download the latest release from
+[Github](https://github.com/phrase/PhraseAppXcode/releases/latest) and unzip
+the file in the `~/Library/Application Support/Developer/Shared/Xcode/Plug-ins`
+directory (assuming the plugin archive was downloaded to `~/Downloads`):
+
 ```
-git clone https://github.com/phrase/PhraseAppXcodePlugin.git
-cd PhraseAppXcodePlugin/
-make
+cd ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins
+unzip ~/Downloads/PhraseAppXcodePlugin.xcplugin.zip
 ```
 
-After cloning the plugin open the Xcode project and build it. The plugin will
-automatically be installed in <code>~/Library/Application
-Support/Developer/Shared/Xcode/Plug-ins</code>. After starting Xcode it will
-ask, whether "the unsafe bundle should be loaded". It should be. Afterwards you
-are ready to go. To uninstall, just delete the plugin from the mentioned path
-(and restart Xcode).
+After starting Xcode it will ask, whether "the unsafe bundle should be loaded".
+It should be. Afterwards you are ready to go. To uninstall, just delete the
+plugin from the mentioned path (and restart Xcode).
 
 This is tested on OS X 10.10 with Xcode 7.2.
 
