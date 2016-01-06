@@ -1,47 +1,258 @@
-# PhraseApp Xcode Plugin
+# PhraseApp for Xcode
 
-This plugin integrates [PhraseApp](https://phraseapp.com/) into Xcode. Currently it supports uploading and downloading of localization files for [Localizable Strings](http://docs.phraseapp.com/guides/formats/ios-localizable-strings/) and [Xliff](http://docs.phraseapp.com/guides/formats/xliff/).
+This plugin integrates [PhraseApp](https://www.phraseapp.com/) into Xcode.
+
 
 ## Installation
 
-1. Download the latest release from the [Releases](https://github.com/phrase/PhraseAppXcode/releases) tab
-2. Make sure you have a plugin folder for your Xcode project, if not:
+```
+git clone https://github.com/phrase/PhraseAppXcodePlugin.git
+cd PhraseAppXcodePlugin/
+make
+```
 
-		mkdir -p ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins/
+After cloning the plugin open the Xcode project and build it. The plugin will
+automatically be installed in <code>~/Library/Application
+Support/Developer/Shared/Xcode/Plug-ins</code>. After starting Xcode it will
+ask, whether "the unsafe bundle should be loaded". It should be. Afterwards you
+are ready to go. To uninstall, just delete the plugin from the mentioned path
+(and restart Xcode).
 
-3. Unzip the archive into the Xcode plugin folder:
+This is tested on OS X 10.10 with Xcode 7.2.
 
-        ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins/
 
-4. Restart Xcode
+## Configuration
 
-The plugin was successfully tested on OS X 10.10 with Xcode 6.2, 6.3 and 6.4 but might work with other versions of Xcode and Mac OS, too.
+Open the plugin window first. Click the **Window > PhraseApp** menu entry. The
+PhraseApp plugin window will open. From here you can configure the plugin,
+select a project, and push and pull locales.
 
-## Setup
+The plugin relies on the [PhraseApp CLI tool](https://phraseapp.com/en/cli) to
+be installed. Point the file selector in the top of the plugin window to this
+location:
 
-To use the plugin from within Xcode go to
+![PhraseApp CLI tool configuration](example_config.png)
 
-    Product > PhraseApp > Settings
+The plugin is going to guess the location, but might fail to do so. If so,
+manually select the CLI tool path. The file must be executable and the file
+pointed to must have the "phraseapp" prefix.
 
-and configure your project settings:
-
-* Access token managed from your [account settings](https://phraseapp.com/settings/oauth_access_tokens)
-* ProjectID from your [projects overview](https://phraseapp.com/projects)
-* Localization file format, e.g. `Strings` or `Xliff`
-* Application path that must point to your localization files
-
-	* Localizable.string: Location of your locale.lproj/ folders
-    * Xliff: Location of your Xliff files
 
 ## Usage
 
-You can upload and download your localization files directly from your Xcode menu:
+The plugin is actually pretty simple. For each workspace opened in Xcode the
+combobox in the plugin window will have an entry. The **Push** and **Pull**
+buttons are active if the CLI tool path was properly configured and the project
+has a PhraseApp configuration file (named `.phraseapp.yml`) in its root
+directory.
 
-    Product > PhraseApp > Download locales # Shift + Alt + D
-    Product > PhraseApp > Upload locales # Shift + Alt + U
+On **Push** and **Pull** the respective output will be sent to the text area in
+the lower part of the window.
 
-## More Information
+![PhraseApp CLI tool configuration](example_push.png)
 
-* [PhraseApp Support](https://phraseapp.com/contact)
-* [PhraseApp Documentation](http://docs.phraseapp.com/)
-* [Working with iOS](http://docs.phraseapp.com/guides/setup/ios/)
+In this example the workspace "MyTest1" was selected and pushed. For a
+description of the output generated see the following section.
+
+
+## Workflow
+
+The internationalization and localization workflow Apple proposes has made the
+following steps and assumptions:
+
+* It is assumed that all development is done in one language, English by
+  default (this can be changed and is described below in the "Change Default
+  Locale" subsection). All strings should be in this language and are considered
+  final. It is called the "development language" in the following.
+* There is a tool in **Editor > Export For Localization** that will extract all
+  strings from user-interface elements (located in storyboards for example) and
+  usages of the `NSLocalizedString` macro in code. These strings are collected
+  in a `XLIFF` file that can be used to hand over to translators.
+* There is of course a function to reimport the translators' results
+  into the source code under the **Editor > Import Localizations...** menu
+  item. This will read a `XLIFF` file and extract the configured translations.
+  The resulting translations are kept in `strings` files for each source of
+  strings (storyboards or code that is) and each target locale.
+
+Into this workflow PhraseApp is integrated. Please note, if you don't want to
+follow this workflow for whatever reason, the plugin is still usable for you.
+Xcode's export and import actions are only triggered if the PhraseApp
+configuration contains an `XLIFF` source (and respective targets). So it can be
+used with any other configuration too!
+
+The following subsections describe two variants of the XLIFF based workflow.
+
+
+### The Simple Workflow
+
+The simpler workflow comes with the following limitation: The development
+language is only handled in Xcode, i.e. it is not possible for product managers
+(or whoever might want to) to change these text fragments directly in
+PhraseApp.
+
+There will be a solution for this limitation, but it requires a slightly more
+complicated setup, so let's start simple.
+
+
+#### Configuration
+
+After creating a project make sure you configure **Base Internationalization**
+and all required target languages in your project's **Info** configuration
+view.
+
+Additionally some files must be generated for the automatic import to work
+properly. Use the following command and afterwards add the generated files to
+the project within Xcode (clicking the **Add files to "[project name]"...***
+point of the projects context menu).
+
+	for locale in <locales>; do
+		echo '/* No Localized Strings */' > <project_name>/$locale.lproj/Localizable.strings
+		echo '/* No Localized Strings */' > <project_name>/$locale.lproj/InfoPlist.strings
+	done
+
+Next we'll need to configure the PhraseApp tools to support export and import
+of the strings to be translated. The following example will assume the Xcode
+export and import will use the `i18n` directory to place and find the `xliff`
+files. The development language is assumed to be English. Make sure you replace
+the placeholders (in square brackets) for `access_token`, `project_id` and
+`locale_id` with the respective values of your setup. Put this template into
+the `.phraseapp.yml` file into your project's root directory.
+
+	phraseapp:
+	  access_token: [access_token]
+	  project_id: [project_id]
+	  push:
+	    sources:
+	    - file: i18n/en.xliff
+	      params:
+	        locale_id: [locale_id]
+	        file_format: xlf
+	        update_translations: true
+	  pull:
+	    targets:
+	    - file: i18n/<locale_name>.xliff
+	      params:
+	        file_format: xlf
+	    - file: [project_name]/<locale_name>.lproj/Localizable.stringsdict
+	      params:
+	        file_format: stringsdict
+
+With this configuration in place the project is ready to use with PhraseApp, as
+described in the next subsection.
+
+
+#### Usage
+
+If you're using PhraseApp's Xcode plugin the export and import is as easy as
+opening the PhraseApp window from **Window > PhraseApp**, selecting the
+respective project from the dropdown, and using the **Push** or **Pull**
+button.
+
+If you want to use the command line for a more manual approach or integration
+into some build tool use the following steps for export:
+
+	xcodebuild -exportLocalizations -localizationPath i18n
+	phraseapp push
+
+And for import of the given locales (`de`, `es`, and `fr` in this example):
+
+	phraseapp pull
+	for locale in de es fr; do xcodebuild -importLocalizations -localizationPath i18n/$locale.xliff; done
+
+Keep in mind that changing strings in the default locale in PhraseApp will
+result in disaster. It must be convention to never change these values in
+PhraseApp, but only in the code itself. The effect would be that Xcode doesn't
+import those strings any more (mismatch between source locale string in
+the `XLIFF` file and the string in the code).
+
+If you want to pluralize a key, this is possible by setting the according flag
+on the key and providing the basic translations. The resulting translated
+pluralizations are pulled into `.stringsdict` files. For more complicated
+pluralization features it might be necessary to also push the source locale's
+`.stringsdict` file.
+
+
+### The Manage All Keys In PhraseApp Workflow
+
+This is a more advanced workflow that will allow to change strings from the
+development language in PhraseApp.
+
+This requires some additional steps as we must make sure the development
+language doesn't block the layering of different locales, like keys should be
+taken from the most specific locale, like en-US first, then general en and last
+from the development locale. We'll introduce an artificial locale for this.
+
+
+#### Change Default Locale
+
+Close the project in Xcode and open up a terminal window. Go to the projects
+root folder and edit the following two files:
+
+* `<project_name>/Info.plist`: set the `CFBundleDevelopmentRegion` variable to
+  `i-default`.
+* `<project_name>.xcodeproj/project.pbxproj`: change the `en` item of the
+  `knownRegions` list to `i-default`. Change the `developmentRegion` value from
+  `en` to `i-default`. (see http://eschatologist.net/blog/?p=224 ).
+
+Open the project again.
+
+
+#### Configuration
+
+This configuration will use the new base locale. Everything else is unchanged.
+The base locale in PhraseApp should be named (aka `locale_name`) "i-default"
+and have the locale-code "en". Having multiple locales with the same code is
+perfectly fine.
+
+	phraseapp:
+	  access_token: [access_token]
+	  project_id: [project_id]
+	  push:
+	    sources:
+	    - file: i18n/i-default.xliff
+	      params:
+	        locale_id: [locale_id]
+	        file_format: xlf
+	        update_translations: true
+	  pull:
+	    targets:
+	    - file: i18n/<locale_name>.xliff
+	      params:
+	        file_format: xlf
+	    - file: [project_name]/<locale_name>.lproj/Localizable.stringsdict
+	      params:
+	        file_format: stringsdict
+
+
+#### Usage
+
+Again everything within the "i-default" locale should be considered fixed in
+PhraseApp and never be changed. After pushing the keys to PhraseApp the product
+manager needs to approve the translations, by moving them to the "standard"
+locale (like "en" in the given example). Translators must base their work on
+this verified locale. Everything else is analogous to the simple workflow.
+
+
+### Output Of Actions
+
+There are some errors that might appear when importing XLIFF files pulled from
+PhraseApp. Let's see an example:
+
+	# Pull locales from PhraseApp
+	Downloaded de to i18n/de.xliff
+	
+	# Import from XLIFF: i18n/de.xliff
+	MyTest1/Base.lproj/Main.storyboard: Incoming development string "Master2" does not match "Master" (Key: "RMx-3f-FxP.title")
+	global: File not found in the project
+
+This happened when importing the German translations from the `de.xliff` file.
+Two messages appear:
+
+* The `Incoming development string "Master2" does not match "Master"` message
+  is serious. This is an indicator for a translation in the development locale
+  being changed in PhraseApp. To fix go to PhraseApp and revert changes to the
+  named key.
+* The `File not found in the project` message isn't that serious and happens
+  when keys are added from something different than the development language
+  (like adding keys in PhraseApp or push different files from other projects).
+
