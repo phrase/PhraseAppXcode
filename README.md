@@ -19,7 +19,7 @@ After starting Xcode it will ask, whether "the unsafe bundle should be loaded".
 It should be. Afterwards you are ready to go. To uninstall, just delete the
 plugin from the mentioned path (and restart Xcode).
 
-This is tested on OS X 10.10 with Xcode 7.2.
+This is tested on OS X 10.10 with Xcode 7.3.
 
 
 ## Configuration
