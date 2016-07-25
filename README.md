@@ -1,6 +1,6 @@
 # PhraseApp for Xcode
 
-This plugin integrates [PhraseApp](https://www.phraseapp.com/) into Xcode.
+This plugin integrates [PhraseApp](https://www.phraseapp.com/) into Xcode. Current version is `1.1.0`.
 
 
 ## Installation
