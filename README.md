@@ -2,6 +2,9 @@
 
 This plugin integrates [PhraseApp](https://www.phraseapp.com/) into Xcode. Current version is `1.1.0`.
 
+**Please note that plugins are not supported by Xcode 8.** The last version to be supported is **7.3**. For those that have already upgraded, please use the **[PhraseApp CLI tool](https://phraseapp.com/en/cli)** ([Github](https://github.com/phrase/phraseapp-client)). 
+
+There is a chance to rollout a native Mac App or use Xcode Source Editor Extensions in the future. Keep in mind that this is not scheduled or planned yet.
 
 ## Installation
 
